@@ -2,6 +2,7 @@
   
 #define KEY_TEMPERATURE 0
 #define KEY_CONDITIONS 1
+#define KEY_HUMEDAD 2
   
 static Window *s_main_window;
 static TextLayer *s_time_layer;
@@ -72,7 +73,7 @@ static void main_window_load(Window *window) {
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_weather_layer));
 
   // Crar una capa de texto para humedad
-  s_weather_layer = text_layer_create(GRect(0, 5, 144, 25)); /* (Left, top, width, height)*/
+  s_humedad_layer = text_layer_create(GRect(0, 5, 144, 25)); 
   text_layer_set_background_color(s_humedad_layer, GColorClear);
   text_layer_set_text_color(s_humedad_layer, GColorWhite);
   text_layer_set_text_alignment(s_humedad_layer, GTextAlignmentCenter);
@@ -126,6 +127,8 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
   static char temperature_buffer[8];
   static char conditions_buffer[32];
   static char weather_layer_buffer[32];
+  static char humedad_buffer[8];
+  static char humedad_layer_buffer[32];
   
   // Read first item
   Tuple *t = dict_read_first(iterator);
@@ -140,6 +143,9 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     case KEY_CONDITIONS:
       snprintf(conditions_buffer, sizeof(conditions_buffer), "%s", t->value->cstring);
       break;
+    case KEY_HUMEDAD:
+      snprintf(humedad_buffer, sizeof(humedad_buffer), "%d", (int)t->value->int32);
+      break;      
     default:
       APP_LOG(APP_LOG_LEVEL_ERROR, "Key %d not recognized!", (int)t->key);
       break;
@@ -152,6 +158,10 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
   // Assemble full string and display
   snprintf(weather_layer_buffer, sizeof(weather_layer_buffer), "%s, %s", temperature_buffer, conditions_buffer);
   text_layer_set_text(s_weather_layer, weather_layer_buffer);
+  
+  snprintf(humedad_layer_buffer, sizeof(weather_layer_buffer), "Humedad: %s", humedad_buffer);
+  text_layer_set_text(s_humedad_layer, humedad_layer_buffer);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, humedad_buffer);
 }
 
 static void inbox_dropped_callback(AppMessageResult reason, void *context) {
