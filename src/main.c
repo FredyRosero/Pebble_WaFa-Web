@@ -1,14 +1,16 @@
 #include <pebble.h>
-  
+//Se definen las claves del diccionario de comunicacion tel <-> reloj, aquí y en ajuestes de proyecto
 #define KEY_TEMPERATURE 0
 #define KEY_CONDITIONS 1
 #define KEY_HUMEDAD 2
-  
+
+
 static Window *s_main_window;
+//capas de texto
 static TextLayer *s_time_layer;
 static TextLayer *s_weather_layer;
 static TextLayer *s_humedad_layer;
-
+//fuentes de texto
 static GFont s_time_font;
 static GFont s_weather_font;
 static GFont s_humedad_font;
@@ -16,6 +18,7 @@ static GFont s_humedad_font;
 static BitmapLayer *s_background_layer;
 static GBitmap *s_background_bitmap;
 
+//La sgt funcion se llama con tick_handler(cada minuto) y escrbie la hora y los minutos
 static void update_time() {
   // Get a tm structure
   time_t temp = time(NULL); 
@@ -117,7 +120,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
     // Add a key-value pair
     dict_write_uint8(iter, 0, 0);
 
-    // Send the message!
+    // Send the message! Osea envia un ApppMesagge(Estrcturado y vació) del reloj al Cel, para que este pida la info via internet y la devuelva
     app_message_outbox_send();
   }
 }
